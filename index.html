@@ -6,7 +6,7 @@
     <title>JWork - Advanced Home Workouts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Add these inside the <head> tag -->
-<meta name="theme-color" content="#FF6B35">
+<meta name="theme-color" content="##7EC8E3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="JWork">
@@ -661,8 +661,8 @@
             z-index: 10000;
             display: flex;
             align-items: center;
-            max-width: 350px;
-            width:95%;
+            max-width: 250px;
+            width:90%;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -2209,7 +2209,7 @@ function getExerciseDescription(exercise) {
             
             // Vibrate if enabled
             if (appState.settings.vibration && navigator.vibrate) {
-                navigator.vibrate(1000);
+                navigator.vibrate(500);
             }
             
             // Auto hide after 5 seconds
