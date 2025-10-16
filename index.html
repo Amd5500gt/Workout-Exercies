@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWork - Advanced Home Workouts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            max-width: 100vw;
+            overflow-x: hidden;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Theme Variables */
+        :root {
+            --primary: #FF6B35;
+            --primary-light: #FF8E53;
+            --primary-dark: #E55A2B;
+            --accent: #4ECDC4;
+            --success: #45B7D1;
+            --warning: #FFBE0B;
+            --error: #FF6B6B;
+            --background: #0F1419;
+            --card-bg: #1A1F25;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A5B0;
+            --text-tertiary: #636366;
+            --section-header: #EBEBF5;
+            --border: #2A2F35;
+            --nav-bg: #1A1F25;
+            --overlay: rgba(0, 0, 0, 0.7);
+            --menu-bg: #2C2C2E;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-heavy: rgba(0, 0, 0, 0.5);
+            --completed: #45B7D1;
+            --rest-day: #BF5AF2;
+            --theme-icon: #ffffff;
+            --header-bg: #1A1F25;
+            --progress-gradient: linear-gradient(90deg, #FF6B35, #FF8E53);
+            --glass-bg: rgba(26, 31, 37, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --border-light: #2C2C2E;
+        }
+
+        /* Light Mode */
+        body.theme-light {
+           --primary: #1E90FF; /* Dodger Blue */
+    --primary-light: #63B3FF; /* Lighter blue */
+    --primary-dark: #005BBB; /* Darker blue */
+    --accent: #00CED1; /* Dark Turquoise */
+    --success: #3AD29F; /* Greenish for success */
+    --warning: #FFD700; /* Gold for warning */
+    --error: #FF4C4C; /* Red for error */
+    --background: #F5F8FF; /* Soft light background */
+    --card-bg: #FFFFFF; /* White cards */
+    --text-primary: #0A0F1C; /* Dark text for readability */
+    --text-secondary: #4B5D7A; /* Muted blue-gray text */
+    --text-tertiary: #6B7A99; /* Lighter muted blue */
+    --section-header: #1E90FF; /* Blue headers */
+    --border: #D0E2FF; /* Soft blue border */
+    --nav-bg: #FFFFFF; /* White navbar */
+    --overlay: rgba(255, 255, 255, 0.7); 
+    --menu-bg: #E0F0FF; /* Light blue menu background */
+    --shadow: rgba(0, 0, 0, 0.1);
+    --shadow-heavy: rgba(0, 0, 0, 0.2);
+    --completed: #3AD29F; /* Success color */
+    --rest-day: #63B3FF; /* Rest day highlight */
+    --theme-icon: #1E90FF;
+    --header-bg: #FFFFFF;
+    --progress-gradient: linear-gradient(90deg, #1E90FF, #63B3FF);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(30, 144, 255, 0.2);
+    --border-light: #D0E2FF;
+        }
+
+        /* Nature Theme */
+        body.theme-nature {
+            --primary: #4CAF50;
+            --primary-light: #8BC34A;
+            --primary-dark: #2E7D32;
+            --accent: #FF9800;
+            --success: #8BC34A;
+            --warning: #FFC107;
+            --error: #F44336;
+            --background: #E8F5E9;
+            --card-bg: #FFFFFF;
+            --text-primary: #1B5E20;
+            --text-secondary: #689F38;
+            --text-tertiary: #33691E;
+            --section-header: #2E7D32;
+            --border: #C8E6C9;
+            --nav-bg: #FFFFFF;
+            --overlay: rgba(76, 175, 80, 0.5);
+            --menu-bg: #FFFFFF;
+            --shadow: rgba(76, 175, 80, 0.2);
+            --shadow-heavy: rgba(76, 175, 80, 0.3);
+            --completed: #8BC34A;
+            --rest-day: #ffffff;
+            --theme-icon: #4CAF50;
+            --header-bg: #ffffff;
+            --progress-gradient: linear-gradient(90deg, #4CAF50, #8BC34A);
+            --glass-bg: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(76, 175, 80, 0.2);
+            --border-light: #E8F5E9;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: env(safe-area-inset-top);
+            background-color: var(--header-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px var(--shadow-heavy);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            padding: 0 20px;
+            padding-top: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--progress-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+        }
+
+        .header-time {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .header-icon:active {
+            transform: scale(0.95);
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            padding: 0 16px;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex: 1;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        /* Workout Page */
+        .workout-page {
+            padding: 10px 0 40px;
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .workout-day-badge {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--border);
+            padding: 12px 24px;
+            border-radius: 20px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        /* Workout Grid */
+        .workout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        /* Exercise Card with Unique Animation */
+        .exercise-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            animation: cardEntrance 0.6s ease-out forwards;
+        }
+
+        @keyframes cardEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 15px 40px var(--shadow-heavy);
+        }
+
+        .exercise-card.completed {
+            opacity: 0.8;
+            transform: translateY(-4px);
+        }
+
+        .exercise-card.completed::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(69, 183, 209, 0.1), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .exercise-animation {
+            width: 100%;
+            height: 200px;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .exercise-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 107, 53, 0.1), rgba(78, 205, 196, 0.1));
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .exercise-card:hover .exercise-animation::before {
+            opacity: 1;
+        }
+
+        .exercise-animation img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            filter: brightness(0.9);
+        }
+
+        .exercise-card:hover .exercise-animation img {
+            filter: brightness(1);
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .exercise-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .exercise-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .exercise-sets {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(255, 107, 53, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .exercise-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .exercise-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .exercise-check {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            background: var(--card-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exercise-check::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--success);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .exercise-check.completed {
+            border-color: var(--success);
+            color: white;
+            transform: scale(1.1) rotate(360deg);
+        }
+
+        .exercise-check.completed::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .exercise-check.completed i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .view-details-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-details-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Exercise Detail Modal */
+        .exercise-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .exercise-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) rotateX(10deg);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exercise-modal.show .modal-content {
+            transform: scale(1) rotateX(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: var(--background);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .modal-animation {
+            width: 100%;
+            height: 300px;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 107, 53, 0.2), rgba(78, 205, 196, 0.2));
+            z-index: 1;
+        }
+
+        .modal-animation img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-details {
+            padding: 24px;
+        }
+
+        .modal-sets {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-instructions {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-instructions h4 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .modal-instructions ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-instructions li {
+            margin-bottom: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .complete-exercise-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .complete-exercise-btn:hover {
+            background: #3aa5c0;
+            transform: translateY(-2px);
+        }
+
+        .complete-exercise-btn.completed {
+            background: var(--text-secondary);
+        }
+
+        .complete-exercise-btn.completed:hover {
+            background: var(--text-tertiary);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+            width:95%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            transform: translateX(20px);
+        }
+
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 107, 53, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .notification.success .notification-icon {
+            background: rgba(69, 183, 209, 0.1);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--error);
+        }
+
+        .notification.warning .notification-icon {
+            background: rgba(255, 190, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-left: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:active {
+            background: var(--background);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Page Transition Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .workout-grid {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .workout-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .workout-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .exercise-animation {
+                height: 180px;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .modal-animation {
+                height: 200px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .workout-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Theme Toggle */
+        #theme-toggle {
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            transform: rotate(20deg);
+            color: var(--accent);
+        }
+
+        /* Streak Counter */
+        .streak-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .streak-counter i {
+            color: var(--warning);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--progress-gradient);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.1;
+            filter: blur(20px);
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -15px) rotate(5deg); }
+            50% { transform: translate(-5px, -10px) rotate(-5deg); }
+            75% { transform: translate(15px, 5px) rotate(3deg); }
+        }
+
+        /* Pulse Animation */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Glow Effect */
+        .glow {
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 107, 53, 0.5); }
+            to { box-shadow: 0 0 30px rgba(255, 107, 53, 0.8); }
+        }
+
+        /* Resize all exercise GIFs to 200x200 pixels */
+.exercise-animation img,
+.modal-animation img {
+    width: 200px !important;
+    height: 200px !important;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Adjust container heights to match 200px images */
+.exercise-animation {
+    height: 200px !important;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-animation {
+    height: 200px !important;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* For the modal, you might want to keep it slightly larger */
+.modal-animation img {
+    width: 200px !important;
+    height: 200px !important;
+}
+
+/* Optional: Add a subtle border or shadow to make the images stand out */
+.exercise-animation img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.modal-animation img {
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow-heavy);
+}
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- Status Bar -->
+    <div class="status-bar"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+                JWork
+            </div>
+        </div>
+
+
+        <div class="header-right">
+            <div class="streak-counter">
+                <i class="fas fa-fire"></i>
+                <span id="streak-count">0</span> days
+            </div>
+            <div class="header-icon" id="theme-toggle">
+                <i class="fas fa-palette"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Workout Page -->
+        <div class="workout-page">
+            <div class="workout-header">
+                <h2 class="section-title">
+                    <i class="fas fa-dumbbell"></i>
+                    <span id="workout-title">Today's Workout</span>
+                </h2>
+                <div class="workout-day-badge" id="workout-day-badge">Monday</div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="workout-progress" style="width: 0%"></div>
+            </div>
+            
+            <div class="workout-grid" id="workout-container">
+                <!-- Workout items will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Detail Modal -->
+    <div class="exercise-modal" id="exercise-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-exercise-name">Exercise Name</h3>
+                <button class="close-modal" id="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-animation" id="modal-animation">
+                    <!-- GIF will be dynamically added here -->
+                </div>
+                <div class="modal-details">
+                    <div class="modal-sets" id="modal-sets">4 sets × 12 reps</div>
+                    <div class="modal-instructions" id="modal-instructions">
+                        <!-- Instructions will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="complete-exercise-btn" id="complete-exercise-btn">
+                    <i class="fas fa-check"></i>
+                    Mark as Completed
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title" id="notification-title">Notification</div>
+            <div class="notification-message" id="notification-message">This is a notification message.</div>
+        </div>
+        <button class="notification-close" id="notification-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        // Updated workout data with home-friendly dumbbell exercises
+        const workoutData = {
+            monday: {
+                title: "CHEST & TRICEPS POWER",
+               exercises: [
+    { 
+        name: "Push-Ups", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/monday/7.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Bench Press:</h4>
+            <ul>
+                <li>Lie on a flat bench with a dumbbell in each hand at chest level</li>
+                <li>Press the dumbbells up until your arms are fully extended</li>
+                <li>Keep your wrists straight and elbows slightly tucked</li>
+                <li>Focus on squeezing your chest at the top of the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Bench Press", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/monday/0.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Bench Press:</h4>
+            <ul>
+                <li>Lie on a flat bench with a dumbbell in each hand at chest level</li>
+                <li>Press the dumbbells up until your arms are fully extended</li>
+                <li>Lower the dumbbells slowly back to the starting position</li>
+                <li>Keep your wrists straight and elbows slightly tucked</li>
+                <li>Focus on squeezing your chest at the top of the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Incline Dumbbell Press", 
+        sets: "4 sets × 10-12 reps",
+        gif: "Exercises/monday/1.gif",
+        instructions: `
+            <h4>How to perform Incline Dumbbell Press:</h4>
+            <ul>
+                <li>Set bench to 30-45 degree incline</li>
+                <li>Hold dumbbells at chest level with palms facing forward</li>
+                <li>Press the dumbbells up until your arms are fully extended</li>
+                <li>Lower the dumbbells slowly back to starting position</li>
+                <li>Keep your back flat against the bench</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Flyes", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/monday/2.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Flyes:</h4>
+            <ul>
+                <li>Lie on a flat bench with dumbbells extended above your chest</li>
+                <li>With a slight bend in your elbows, lower the dumbbells out to your sides</li>
+                <li>Feel the stretch in your chest, then bring the dumbbells back to the starting position</li>
+                <li>Keep the movement controlled - don't use momentum</li>
+                <li>Squeeze your chest at the top of the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Close Grip Dumbbell Press", 
+        sets: "3 sets × 10-12 reps",
+        gif: "Exercises/monday/3.gif",
+        instructions: `
+            <h4>How to perform Close Grip Dumbbell Press:</h4>
+            <ul>
+                <li>Lie on a flat bench holding one dumbbell with both hands</li>
+                <li>Position the dumbbell over your chest with arms extended</li>
+                <li>Lower the dumbbell toward your chest, keeping elbows close to your body</li>
+                <li>Press the dumbbell back up to the starting position</li>
+                <li>Focus on triceps engagement throughout the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Overhead Triceps Extension", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/monday/4.gif",
+        instructions: `
+            <h4>How to perform Overhead Triceps Extension:</h4>
+            <ul>
+                <li>Sit on a bench with back support</li>
+                <li>Hold a dumbbell with both hands overhead</li>
+                <li>Lower the dumbbell behind your head by bending your elbows</li>
+                <li>Extend your arms back to the starting position</li>
+                <li>Keep your elbows close to your head throughout the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Triceps Kickbacks", 
+        sets: "3 sets × 12-15 reps each arm",
+        gif: "Exercises/monday/5.gif",
+        instructions: `
+            <h4>How to perform Triceps Kickbacks:</h4>
+            <ul>
+                <li>Place one knee and hand on a bench for support</li>
+                <li>Hold a dumbbell in your other hand with elbow bent at 90 degrees</li>
+                <li>Extend your arm back until it's straight</li>
+                <li>Squeeze your triceps at the top of the movement</li>
+                <li>Return to the starting position with control</li>
+            </ul>
+        `
+    }
+]
+},
+tuesday: {
+title: "BACK & BICEPS FOCUS",
+exercises: [
+    { 
+        name: "Pull Ups", 
+        sets: "2 sets × 10-12 reps",
+        gif: "Exercises/tuesday/7.gif",
+        instructions: `
+            <h4>How to perform Pull-ups:</h4>
+            <ul>
+                <li>Place one knee and hand on a bench for support</li>
+                <li>Pull the dumbbell up toward your chest</li>
+                <li>Squeeze your back muscles at the top</li>
+      
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Rows", 
+        sets: "4 sets × 10-12 reps each arm",
+        gif: "Exercises/tuesday/0.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Rows:</h4>
+            <ul>
+                <li>Place one knee and hand on a bench for support</li>
+                <li>Hold a dumbbell in your other hand with arm extended</li>
+                <li>Pull the dumbbell up toward your chest</li>
+                <li>Squeeze your back muscles at the top</li>
+                <li>Lower the dumbbell with control back to starting position</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Pullovers", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/tuesday/1.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Pullovers:</h4>
+            <ul>
+                <li>Lie perpendicular on a bench with only your upper back supported</li>
+                <li>Hold one dumbbell with both hands above your chest</li>
+                <li>Lower the dumbbell behind your head in an arc motion</li>
+                <li>Feel the stretch in your lats, then return to starting position</li>
+                <li>Keep your core engaged throughout the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Renegade Rows", 
+        sets: "3 sets × 10 reps each arm",
+        gif: "Exercises/tuesday/2.gif",
+        instructions: `
+            <h4>How to perform Renegade Rows:</h4>
+            <ul>
+                <li>Start in a push-up position with hands on dumbbells</li>
+                <li>Row one dumbbell up toward your chest while balancing on the other</li>
+                <li>Keep your hips stable and core tight</li>
+                <li>Lower the dumbbell back to the floor</li>
+                <li>Alternate arms for each rep</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Curls", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/tuesday/3.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Curls:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold dumbbells at your sides with palms facing forward</li>
+                <li>Curl the dumbbells up toward your shoulders</li>
+                <li>Squeeze your biceps at the top</li>
+                <li>Lower the dumbbells with control back to starting position</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Hammer Curls", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/tuesday/4.gif",
+        instructions: `
+            <h4>How to perform Hammer Curls:</h4>
+            <ul>
+                <li>Hold dumbbells with palms facing each other</li>
+                <li>Keep elbows close to your sides</li>
+                <li>Curl dumbbells up toward your shoulders</li>
+                <li>Squeeze biceps at the top</li>
+                <li>Lower dumbbells with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Incline Dumbbell Curls", 
+        sets: "3 sets × 10-12 reps",
+        gif: "Exercises/tuesday/5.gif",
+        instructions: `
+            <h4>How to perform Incline Dumbbell Curls:</h4>
+            <ul>
+                <li>Sit on an incline bench with arms hanging straight down</li>
+                <li>Curl the dumbbells up toward your shoulders</li>
+                <li>Squeeze your biceps at the top of the movement</li>
+                <li>Lower the dumbbells with control</li>
+                <li>Keep your back against the bench throughout</li>
+            </ul>
+        `
+    }
+]
+},
+wednesday: {
+title: "SHOULDERS & CORE STABILITY",
+exercises: [
+    { 
+        name: "Dumbbell Shoulder Press", 
+        sets: "4 sets × 10-12 reps",
+        gif: "Exercises/wednesday/0.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Shoulder Press:</h4>
+            <ul>
+                <li>Sit on a bench with back support</li>
+                <li>Hold dumbbells at shoulder level with palms facing forward</li>
+                <li>Press the dumbbells overhead until arms are fully extended</li>
+                <li>Lower the dumbbells back to starting position</li>
+                <li>Keep your core tight and avoid arching your back</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Lateral Raises", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/wednesday/1.gif",
+        instructions: `
+            <h4>How to perform Lateral Raises:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold dumbbells at your sides with palms facing each other</li>
+                <li>Raise arms out to sides until parallel to floor</li>
+                <li>Lower dumbbells with control</li>
+                <li>Keep a slight bend in your elbows throughout</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Front Raises", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/wednesday/2.gif",
+        instructions: `
+            <h4>How to perform Front Raises:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold dumbbells in front of your thighs</li>
+                <li>Raise one arm forward until parallel to floor</li>
+                <li>Lower with control and alternate arms</li>
+                <li>Keep your core engaged to prevent swinging</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Bent-Over Rear Delt Raises", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/wednesday/3.gif",
+        instructions: `
+            <h4>How to perform Bent-Over Rear Delt Raises:</h4>
+            <ul>
+                <li>Bend at the hips until your torso is nearly parallel to the floor</li>
+                <li>Hold dumbbells with palms facing each other</li>
+                <li>Raise arms out to sides, squeezing your rear delts</li>
+                <li>Lower with control</li>
+                <li>Keep your back straight throughout the movement</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Russian Twists", 
+        sets: "3 sets × 20 reps (10 each side)",
+        gif: "Exercises/wednesday/4.gif",
+        instructions: `
+            <h4>How to perform Russian Twists:</h4>
+            <ul>
+                <li>Sit on the floor with knees bent and feet elevated</li>
+                <li>Hold a dumbbell with both hands in front of your chest</li>
+                <li>Lean back slightly while keeping your back straight</li>
+                <li>Twist your torso to one side, then to the other</li>
+                <li>Keep the movement controlled and engage your core</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Wood Chops", 
+        sets: "3 sets × 12 reps each side",
+        gif: "Exercises/wednesday/5.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Wood Chops:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold a dumbbell with both hands above one shoulder</li>
+                <li>Chop the dumbbell down diagonally across your body</li>
+                <li>Engage your core throughout the movement</li>
+                <li>Return to starting position with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Plank with Dumbbell Drag", 
+        sets: "3 sets × 10 reps each side",
+        gif: "Exercises/wednesday/6.gif",
+        instructions: `
+            <h4>How to perform Plank with Dumbbell Drag:</h4>
+            <ul>
+                <li>Start in a push-up position with a dumbbell next to one hand</li>
+                <li>With your opposite hand, reach under your body and drag the dumbbell to the other side</li>
+                <li>Alternate sides for each rep</li>
+                <li>Keep your hips stable and core engaged</li>
+                <li>Maintain a straight line from head to heels</li>
+            </ul>
+        `
+    }
+]
+},
+thursday: {
+title: "FULL BODY STRENGTH",
+exercises: [
+    { 
+        name: "Goblet Squats", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/thursday/0.gif",
+        instructions: `
+            <h4>How to perform Goblet Squats:</h4>
+            <ul>
+                <li>Hold one dumbbell vertically against your chest with both hands</li>
+                <li>Stand with feet slightly wider than shoulder-width</li>
+                <li>Lower into a squat until your elbows touch your knees</li>
+                <li>Keep your chest up and back straight</li>
+                <li>Drive through your heels to return to standing</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Lunges", 
+        sets: "4 sets × 10 reps each leg",
+        gif: "Exercises/thursday/1.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Lunges:</h4>
+            <ul>
+                <li>Hold dumbbells at your sides</li>
+                <li>Step forward with one leg and lower your hips</li>
+                <li>Descend until both knees are bent at 90 degrees</li>
+                <li>Push back to the starting position</li>
+                <li>Alternate legs for each rep</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Deadlifts", 
+        sets: "4 sets × 10-12 reps",
+        gif: "Exercises/thursday/2.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Deadlifts:</h4>
+            <ul>
+                <li>Stand with feet hip-width apart, dumbbells in front of your thighs</li>
+                <li>Hinge at your hips while keeping your back straight</li>
+                <li>Lower the dumbbells toward the floor</li>
+                <li>Squeeze your glutes to return to standing</li>
+                <li>Keep the dumbbells close to your body throughout</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Push Press", 
+        sets: "3 sets × 8-10 reps",
+        gif: "Exercises/thursday/3.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Push Press:</h4>
+            <ul>
+                <li>Hold dumbbells at shoulder level</li>
+                <li>Bend your knees slightly then explosively push up with your legs</li>
+                <li>Use the momentum to press the dumbbells overhead</li>
+                <li>Lower the dumbbells with control back to your shoulders</li>
+                <li>This is a power movement - focus on explosive upward motion</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Renegade Rows", 
+        sets: "3 sets × 8 reps each arm",
+        gif: "Exercises/thursday/4.gif",
+        instructions: `
+            <h4>How to perform Renegade Rows:</h4>
+            <ul>
+                <li>Start in a push-up position with hands on dumbbells</li>
+                <li>Row one dumbbell up toward your chest while balancing on the other</li>
+                <li>Keep your hips stable and core tight</li>
+                <li>Lower the dumbbell back to the floor</li>
+                <li>Alternate arms for each rep</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Farmer's Walk", 
+        sets: "3 sets × 30-40 meters",
+        gif: "Exercises/thursday/5.gif",
+        instructions: `
+            <h4>How to perform Farmer's Walk:</h4>
+            <ul>
+                <li>Hold heavy dumbbells in each hand</li>
+                <li>Walk for the prescribed distance while maintaining good posture</li>
+                <li>Keep your shoulders back and chest up</li>
+                <li>This exercise builds grip strength and overall stability</li>
+                <li>Focus on controlled, powerful steps</li>
+            </ul>
+        `
+    }
+]
+},
+friday: {
+title: "UPPER BODY HYPERTROPHY",
+exercises: [
+    { 
+        name: "Incline Dumbbell Press", 
+        sets: "4 sets × 10-12 reps",
+        gif: "Exercises/friday/0.gif",
+        instructions: `
+            <h4>How to perform Incline Dumbbell Press:</h4>
+            <ul>
+                <li>Set bench to 30-45 degree incline</li>
+                <li>Hold dumbbells at chest level with palms facing forward</li>
+                <li>Press the dumbbells up until your arms are fully extended</li>
+                <li>Lower the dumbbells slowly back to starting position</li>
+                <li>Focus on squeezing your upper chest at the top</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Pullovers", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/friday/1.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Pullovers:</h4>
+            <ul>
+                <li>Lie perpendicular on a bench with only your upper back supported</li>
+                <li>Hold one dumbbell with both hands above your chest</li>
+                <li>Lower the dumbbell behind your head in an arc motion</li>
+                <li>Feel the stretch in your lats and chest</li>
+                <li>Return to starting position with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Arnold Press", 
+        sets: "4 sets × 10-12 reps",
+        gif: "Exercises/friday/2.gif",
+        instructions: `
+            <h4>How to perform Arnold Press:</h4>
+            <ul>
+                <li>Sit on a bench with back support</li>
+                <li>Start with dumbbells at shoulder level, palms facing you</li>
+                <li>As you press up, rotate your palms to face forward</li>
+                <li>At the top, your palms should face away from you</li>
+                <li>Reverse the motion on the way down</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Shrugs", 
+        sets: "4 sets × 15-20 reps",
+        gif: "Exercises/friday/3.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Shrugs:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold dumbbells at your sides</li>
+                <li>Shrug your shoulders up toward your ears</li>
+                <li>Squeeze your traps at the top</li>
+                <li>Lower with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Concentration Curls", 
+        sets: "3 sets × 12-15 reps each arm",
+        gif: "Exercises/friday/4.gif",
+        instructions: `
+            <h4>How to perform Concentration Curls:</h4>
+            <ul>
+                <li>Sit on a bench with legs spread</li>
+                <li>Rest your elbow against your inner thigh</li>
+                <li>Curl the dumbbell up toward your shoulder</li>
+                <li>Squeeze your bicep at the top</li>
+                <li>Lower with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Skull Crushers", 
+        sets: "3 sets × 12-15 reps",
+        gif: "Exercises/friday/5.gif",
+        instructions: `
+            <h4>How to perform Skull Crushers:</h4>
+            <ul>
+                <li>Lie on a flat bench with dumbbells in each hand</li>
+                <li>Extend arms straight up over your chest</li>
+                <li>Bend elbows to lower dumbbells toward your temples</li>
+                <li>Extend arms back to starting position</li>
+                <li>Keep upper arms stationary throughout movement</li>
+            </ul>
+        `
+    }
+]
+},
+saturday: {
+title: "LEG DAY POWER",
+exercises: [
+    { 
+        name: "Goblet Squats", 
+        sets: "5 sets × 12-15 reps",
+        gif: "Exercises/saturday/0.gif",
+        instructions: `
+            <h4>How to perform Goblet Squats:</h4>
+            <ul>
+                <li>Hold one dumbbell vertically against your chest with both hands</li>
+                <li>Stand with feet slightly wider than shoulder-width</li>
+                <li>Lower into a squat until your elbows touch your knees</li>
+                <li>Keep your chest up and back straight</li>
+                <li>Drive through your heels to return to standing</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Lunges", 
+        sets: "4 sets × 10 reps each leg",
+        gif: "Exercises/saturday/1.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Lunges:</h4>
+            <ul>
+                <li>Hold dumbbells at your sides</li>
+                <li>Step forward with one leg and lower your hips</li>
+                <li>Descend until both knees are bent at 90 degrees</li>
+                <li>Push back to the starting position</li>
+                <li>Alternate legs for each rep</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Romanian Deadlifts", 
+        sets: "4 sets × 12-15 reps",
+        gif: "Exercises/saturday/2.gif",
+        instructions: `
+            <h4>How to perform Romanian Deadlifts:</h4>
+            <ul>
+                <li>Stand with feet hip-width apart</li>
+                <li>Hold dumbbells in front of your thighs</li>
+                <li>Hinge at your hips while keeping your back straight</li>
+                <li>Lower the dumbbells toward the floor until you feel a stretch in your hamstrings</li>
+                <li>Squeeze your glutes to return to standing</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Calf Raises", 
+        sets: "5 sets × 20-25 reps",
+        gif: "Exercises/saturday/3.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Calf Raises:</h4>
+            <ul>
+                <li>Stand with feet shoulder-width apart</li>
+                <li>Hold dumbbells at your sides</li>
+                <li>Raise up onto your toes as high as possible</li>
+                <li>Squeeze your calves at the top</li>
+                <li>Lower with control back to the floor</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Bulgarian Split Squats", 
+        sets: "3 sets × 10 reps each leg",
+        gif: "Exercises/saturday/4.gif",
+        instructions: `
+            <h4>How to perform Bulgarian Split Squats:</h4>
+            <ul>
+                <li>Stand a few feet in front of a bench or chair</li>
+                <li>Place the top of one foot on the bench behind you</li>
+                <li>Hold dumbbells at your sides</li>
+                <li>Lower into a lunge until your front thigh is parallel to the floor</li>
+                <li>Push through your front foot to return to starting position</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Step-Ups", 
+        sets: "3 sets × 12 reps each leg",
+        gif: "Exercises/saturday/5.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Step-Ups:</h4>
+            <ul>
+                <li>Stand in front of a bench or step</li>
+                <li>Hold dumbbells at your sides</li>
+                <li>Step up onto the bench with one foot</li>
+                <li>Drive through your heel to bring your other foot up</li>
+                <li>Step back down with control</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dumbbell Swings", 
+        sets: "3 sets × 15 reps",
+        gif: "Exercises/saturday/6.gif",
+        instructions: `
+            <h4>How to perform Dumbbell Swings:</h4>
+            <ul>
+                <li>Stand with feet wider than shoulder-width</li>
+                <li>Hold one dumbbell with both hands between your legs</li>
+                <li>Hinge at your hips and swing the dumbbell back</li>
+                <li>Explosively thrust your hips forward to swing the dumbbell to chest height</li>
+                <li>Use hip power, not arm strength</li>
+            </ul>
+        `
+    }
+]
+},
+sunday: {
+title: "ACTIVE RECOVERY & MOBILITY",
+exercises: [
+    { 
+        name: "Light Yoga Flow", 
+        sets: "30 minutes",
+        instructions: `
+            <h4>How to perform Light Yoga Flow:</h4>
+            <ul>
+                <li>Start with gentle warm-up poses like Cat-Cow and Child's Pose</li>
+                <li>Move through sun salutations slowly</li>
+                <li>Focus on deep breathing and connecting movement with breath</li>
+                <li>Hold each pose for 5-10 breaths</li>
+                <li>Listen to your body and don't push too hard</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Foam Rolling", 
+        sets: "Full body 15 minutes",
+        instructions: `
+            <h4>How to perform Foam Rolling:</h4>
+            <ul>
+                <li>Roll each major muscle group slowly - quads, hamstrings, glutes, back</li>
+                <li>Spend extra time on tight areas but avoid direct pain on joints</li>
+                <li>Breathe deeply and relax into the pressure</li>
+                <li>Move in all directions for each muscle group</li>
+                <li>Focus on areas that feel particularly tight from the week's workouts</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Dynamic Stretching", 
+        sets: "20 minutes",
+        instructions: `
+            <h4>How to perform Dynamic Stretching:</h4>
+            <ul>
+                <li>Perform movements through full range of motion</li>
+                <li>Include leg swings, arm circles, torso twists, and hip circles</li>
+                <li>Move slowly and with control, gradually increasing range</li>
+                <li>Focus on fluid, continuous movement rather than holding stretches</li>
+                <li>This helps improve mobility and prepare your body for the week ahead</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Light Walking", 
+        sets: "45 minutes",
+        instructions: `
+            <h4>How to perform Light Walking:</h4>
+            <ul>
+                <li>Walk at a comfortable, steady pace - you should be able to hold a conversation</li>
+                <li>Maintain good posture with shoulders back and chest up</li>
+                <li>Swing arms naturally as you walk</li>
+                <li>Breathe deeply and rhythmically</li>
+                <li>Enjoy the surroundings and use this time to mentally prepare for the week</li>
+            </ul>
+        `
+    },
+    { 
+        name: "Mobility Drills", 
+        sets: "20 minutes",
+        instructions: `
+            <h4>How to perform Mobility Drills:</h4>
+            <ul>
+                <li>Focus on joint mobility exercises for shoulders, hips, and spine</li>
+                <li>Include wrist circles, ankle circles, hip circles, and shoulder rolls</li>
+                <li>Perform cat-cow stretches for spinal mobility</li>
+                <li>Move slowly and with awareness of each joint's range</li>
+                <li>Stop if you feel any pain - mobility work should feel good, not painful</li>
+            </ul>
+        `
+    }
+]
+}
+        }
+    
+        // Application state
+        let appState = {
+            currentDate: new Date(),
+            completedTasks: {},
+            settings: {
+                notifications: true,
+                vibration: true,
+                autoBackup: true,
+                theme: "dark",
+                browserNotifications: false,
+            },
+            streak: 0,
+            lastActivityDate: null,
+            lastResetDate: null,
+            notificationPermission: "default",
+        };
+
+        // Initialize the application
+        function initApp() {
+            console.log('Initializing Advanced Workout App...');
+            loadAppState();
+            setupEventListeners();
+            updateDateTime();
+            renderWorkout();
+            
+            // Add floating elements for visual interest
+            createFloatingElements();
+            
+            // Start intervals
+            setInterval(updateDateTime, 1000);
+        }
+
+        // Create floating background elements
+        function createFloatingElements() {
+            const colors = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)'];
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < 5; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                element.style.background = colors[Math.floor(Math.random() * colors.length)];
+                element.style.width = `${Math.random() * 100 + 50}px`;
+                element.style.height = element.style.width;
+                element.style.top = `${Math.random() * 100}%`;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.animationDelay = `${Math.random() * 15}s`;
+                container.appendChild(element);
+            }
+        }
+
+        // Load app state from localStorage
+        function loadAppState() {
+            const savedState = localStorage.getItem('jworkAppState');
+            if (savedState) {
+                try {
+                    const parsedState = JSON.parse(savedState);
+                    
+                    // Convert date strings back to Date objects
+                    if (parsedState.lastActivityDate) {
+                        parsedState.lastActivityDate = new Date(parsedState.lastActivityDate);
+                    }
+                    if (parsedState.currentDate) {
+                        parsedState.currentDate = new Date(parsedState.currentDate);
+                    }
+                    
+                    appState = { ...appState, ...parsedState };
+                    console.log('App state loaded successfully');
+                } catch (error) {
+                    console.error('Error loading app state:', error);
+                }
+            }
+            
+            // Apply saved theme
+            document.body.className = `theme-${appState.settings.theme}`;
+            
+            // Update streak display
+            document.getElementById('streak-count').textContent = appState.streak;
+        }
+
+        // Save app state to localStorage
+        function saveAppState() {
+            try {
+                localStorage.setItem('jworkAppState', JSON.stringify(appState));
+                console.log('App state saved');
+            } catch (error) {
+                console.error('Error saving app state:', error);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+            
+            // Exercise Modal
+            document.getElementById('close-modal').addEventListener('click', () => {
+                document.getElementById('exercise-modal').classList.remove('show');
+            });
+            
+            // Close modal when clicking outside
+            document.getElementById('exercise-modal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('exercise-modal')) {
+                    document.getElementById('exercise-modal').classList.remove('show');
+                }
+            });
+            
+            // Complete exercise button
+            document.getElementById('complete-exercise-btn').addEventListener('click', completeCurrentExercise);
+            
+            // Notification close
+            document.getElementById('notification-close').addEventListener('click', () => {
+                document.getElementById('notification').classList.remove('show');
+            });
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            const currentTheme = appState.settings.theme;
+            let newTheme;
+            
+            if (currentTheme === 'light') {
+                newTheme = 'dark';
+            } else if (currentTheme === 'dark') {
+                newTheme = 'nature';
+            } else {
+                newTheme = 'light';
+            }
+            
+            document.body.className = `theme-${newTheme}`;
+            appState.settings.theme = newTheme;
+            saveAppState();
+            showNotification('Theme Changed', `Switched to ${newTheme} theme`);
+        }
+
+        // Update date and time display
+        function updateDateTime() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            
+            const currentTime = document.getElementById('current-time');
+            if (currentTime) {
+                currentTime.textContent = now.toLocaleTimeString([], timeOptions);
+            }
+        }
+
+        // Render workout page
+        function renderWorkout() {
+            const today = new Date();
+            const dayName = getDayName(today);
+            const workout = workoutData[dayName];
+            
+            const workoutTitle = document.getElementById('workout-title');
+            const workoutDayBadge = document.getElementById('workout-day-badge');
+            const workoutContainer = document.getElementById('workout-container');
+            
+            if (!workout) {
+                // If no workout for today, show a rest day message
+                workoutTitle.textContent = "Rest Day";
+                workoutDayBadge.textContent = today.toLocaleDateString([], { weekday: 'long' });
+                workoutContainer.innerHTML = `
+                    <div class="exercise-card" style="text-align: center; padding: 40px 20px; grid-column: 1 / -1;">
+                        <div class="exercise-content">
+                            <div class="exercise-name" style="font-size: 1.8rem; margin-bottom: 16px;">Rest Day</div>
+                            <div class="exercise-description" style="font-size: 1.1rem;">No workout scheduled for today. Enjoy your recovery!</div>
+                        </div>
+                    </div>
+                `;
+                updateProgressBar(0);
+                return;
+            }
+            
+            // Update workout title and badge
+            workoutTitle.textContent = workout.title;
+            workoutDayBadge.textContent = today.toLocaleDateString([], { weekday: 'long' });
+            
+            // Calculate progress
+            const completedCount = calculateCompletedExercises(workout, today);
+            const progressPercentage = (completedCount / workout.exercises.length) * 100;
+            updateProgressBar(progressPercentage);
+            
+            // Render workout exercises
+            workoutContainer.innerHTML = '';
+            workout.exercises.forEach((exercise, index) => {
+                const exerciseCard = document.createElement('div');
+                exerciseCard.className = 'exercise-card';
+                
+                // Check if exercise is completed
+                const exerciseKey = `${today.toDateString()}-${exercise.name}`;
+                const isCompleted = appState.completedTasks[exerciseKey];
+                
+                if (isCompleted) {
+                    exerciseCard.classList.add('completed');
+                }
+                
+                // Add animation delay for staggered entrance
+                exerciseCard.style.animationDelay = `${index * 0.1}s`;
+                
+                exerciseCard.innerHTML = `
+                    <div class="exercise-animation">
+                        <img src="${exercise.gif}" alt="${exercise.name}" onerror="this.src='https://via.placeholder.com/400x200?text=Exercise+Demonstration'">
+                    </div>
+                    <div class="exercise-content">
+                        <div class="exercise-header">
+                            <div class="exercise-name">${exercise.name}</div>
+                            <div class="exercise-sets">${exercise.sets}</div>
+                        </div>
+                         <div class="exercise-description">${getExerciseDescription(exercise)}</div>
+                        <div class="exercise-actions">
+                            <button class="view-details-btn">
+                                <i class="fas fa-info-circle"></i>
+                                Details
+                            </button>
+                            <div class="exercise-check ${isCompleted ? 'completed' : ''}" data-exercise="${exercise.name}" data-type="workout">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                // Helper function to extract clean description from instructions
+function getExerciseDescription(exercise) {
+    if (!exercise.instructions) return 'Click for details';
+    
+    // Remove HTML tags and get clean text
+    const cleanText = exercise.instructions.replace(/<[^>]*>/g, '');
+    
+    // Get first instruction point
+    const lines = cleanText.split('\n').filter(line => line.trim());
+    if (lines.length > 1) {
+        // Return the first actual instruction (usually after the heading)
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i].trim().length > 10) {
+                return lines[i].trim().substring(0, 80) + '...';
+            }
+        }
+    }
+    
+    // Fallback: return first 80 characters of clean text
+    return cleanText.substring(0, 80) + (cleanText.length > 80 ? '...' : '');
+}
+                // Add click event to show exercise details
+                const detailsButton = exerciseCard.querySelector('.view-details-btn');
+                if (detailsButton) {
+                    detailsButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showExerciseDetails(exercise);
+                    });
+                }
+                
+                // Add click event to mark as completed
+                const checkButton = exerciseCard.querySelector('.exercise-check');
+                if (checkButton) {
+                    checkButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleExerciseCompletion(this, exercise.name);
+                    });
+                }
+                
+                // Add click event to card to show details
+                exerciseCard.addEventListener('click', () => {
+                    showExerciseDetails(exercise);
+                });
+                
+                workoutContainer.appendChild(exerciseCard);
+            });
+        }
+
+        // Calculate completed exercises for progress bar
+        function calculateCompletedExercises(workout, date) {
+            let completedCount = 0;
+            workout.exercises.forEach(exercise => {
+                const exerciseKey = `${date.toDateString()}-${exercise.name}`;
+                if (appState.completedTasks[exerciseKey]) {
+                    completedCount++;
+                }
+            });
+            return completedCount;
+        }
+
+        // Update progress bar
+        function updateProgressBar(percentage) {
+            const progressBar = document.getElementById('workout-progress');
+            if (progressBar) {
+                progressBar.style.width = `${percentage}%`;
+                
+                // Add glow effect when workout is completed
+                if (percentage === 100) {
+                    progressBar.classList.add('glow');
+                } else {
+                    progressBar.classList.remove('glow');
+                }
+            }
+        }
+
+        // Show exercise details in modal
+        function showExerciseDetails(exercise) {
+            const today = new Date();
+            const exerciseKey = `${today.toDateString()}-${exercise.name}`;
+            const isCompleted = appState.completedTasks[exerciseKey];
+            
+            document.getElementById('modal-exercise-name').textContent = exercise.name;
+            document.getElementById('modal-sets').textContent = exercise.sets;
+            document.getElementById('modal-animation').innerHTML = `<img src="${exercise.gif}" alt="${exercise.name}" onerror="this.src='https://via.placeholder.com/800x300?text=Exercise+Demonstration'">`;
+            document.getElementById('modal-instructions').innerHTML = exercise.instructions;
+            
+            const completeButton = document.getElementById('complete-exercise-btn');
+            if (isCompleted) {
+                completeButton.innerHTML = '<i class="fas fa-check"></i> Already Completed';
+                completeButton.classList.add('completed');
+            } else {
+                completeButton.innerHTML = '<i class="fas fa-check"></i> Mark as Completed';
+                completeButton.classList.remove('completed');
+            }
+            
+            // Store current exercise for completion
+            completeButton.dataset.exercise = exercise.name;
+            
+            document.getElementById('exercise-modal').classList.add('show');
+        }
+
+        // Complete the current exercise from modal
+        function completeCurrentExercise() {
+            const exerciseName = this.dataset.exercise;
+            const today = new Date();
+            const exerciseKey = `${today.toDateString()}-${exerciseName}`;
+            
+            if (appState.completedTasks[exerciseKey]) {
+                showNotification('Already Completed', `${exerciseName} is already marked as completed`);
+                return;
+            }
+            
+            appState.completedTasks[exerciseKey] = {
+                completed: true,
+                timestamp: new Date().toISOString(),
+                type: 'workout'
+            };
+            
+            // Update streak
+            appState = updateStreak(appState.completedTasks, appState);
+            document.getElementById('streak-count').textContent = appState.streak;
+            
+            // Update UI
+            renderWorkout();
+            saveAppState();
+            
+            // Close modal and show notification
+            document.getElementById('exercise-modal').classList.remove('show');
+            showNotification('Exercise Completed', `Great job completing ${exerciseName}!`, 'success');
+        }
+
+        // Toggle exercise completion from card
+        function toggleExerciseCompletion(element, exerciseName) {
+            const today = new Date();
+            const exerciseKey = `${today.toDateString()}-${exerciseName}`;
+            
+            if (appState.completedTasks[exerciseKey]) {
+                // Already completed, do nothing (tasks can only be completed once)
+                showNotification('Already Completed', `${exerciseName} is already marked as completed`);
+                return;
+            } else {
+                appState.completedTasks[exerciseKey] = {
+                    completed: true,
+                    timestamp: new Date().toISOString(),
+                    type: 'workout'
+                };
+                element.classList.add('completed');
+                if (element.closest('.exercise-card')) {
+                    element.closest('.exercise-card').classList.add('completed');
+                }
+                showNotification('Exercise Completed', `Great job completing ${exerciseName}!`, 'success');
+                
+                // Update streak
+                appState = updateStreak(appState.completedTasks, appState);
+                document.getElementById('streak-count').textContent = appState.streak;
+            }
+            
+            saveAppState();
+            renderWorkout(); // Re-render to update progress bar
+        }
+
+        // Update streak
+        function updateStreak(completedTasks, appState) {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            // Check if we have activity today
+            let hasActivityToday = false;
+            Object.keys(completedTasks).forEach(key => {
+                if (key.startsWith(today.toDateString())) {
+                    hasActivityToday = true;
+                }
+            });
+            
+            // Check if we had activity yesterday
+            let hadActivityYesterday = false;
+            Object.keys(completedTasks).forEach(key => {
+                if (key.startsWith(yesterday.toDateString())) {
+                    hadActivityYesterday = true;
+                }
+            });
+            
+            // Update streak
+            if (hasActivityToday) {
+                if (appState.lastActivityDate && 
+                    appState.lastActivityDate.toDateString() === yesterday.toDateString()) {
+                    // Continued streak
+                    appState.streak++;
+                } else if (!appState.lastActivityDate || 
+                          appState.lastActivityDate.toDateString() !== today.toDateString()) {
+                    // New streak starting today
+                    appState.streak = 1;
+                }
+                appState.lastActivityDate = today;
+            }
+            
+            return appState;
+        }
+
+        // Show notification
+        function showNotification(title, message, type = 'info') {
+            if (!appState.settings.notifications) return;
+            
+            document.getElementById('notification-title').textContent = title;
+            document.getElementById('notification-message').textContent = message;
+            
+            // Set notification type
+            const notification = document.getElementById('notification');
+            notification.className = 'notification';
+            notification.classList.add(type);
+            notification.classList.add('show');
+            
+            // Vibrate if enabled
+            if (appState.settings.vibration && navigator.vibrate) {
+                navigator.vibrate(1000);
+            }
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Get day name from date
+        function getDayName(date) {
+            return date.toLocaleDateString('en', { weekday: 'long' }).toLowerCase();
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
