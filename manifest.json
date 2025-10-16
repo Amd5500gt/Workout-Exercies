@@ -1,0 +1,27 @@
+{
+  "background_color": "#9584f1",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "JWork",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "jwork",
+  "start_url": "/",
+  "theme_color": "#3db4f8",
+  "icons": [
+    {
+      "src": "icons/512.png",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "id": "1241",
+  "description": "Manage Your weekly Workout Routine With this App"
+}
