@@ -45,3 +45,35 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+
+// Add to your service worker (sw.js)
+const DYNAMIC_CACHE = 'jwork-dynamic-v1';
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+        
+        return fetch(event.request).then((fetchResponse) => {
+          // Check if we received a valid response
+          if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
+            return fetchResponse;
+          }
+          
+          // Clone the response
+          const responseToCache = fetchResponse.clone();
+          
+          caches.open(DYNAMIC_CACHE)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          
+          return fetchResponse;
+        });
+      })
+  );
+});
