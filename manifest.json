@@ -3,7 +3,7 @@
   "dir": "ltr",
   "display": "standalone",
   "name": "JWork",
-  "orientation": "any",
+  "orientation": "potrait",
   "scope": "/",
   "short_name": "jwork",
   "start_url": "/",
