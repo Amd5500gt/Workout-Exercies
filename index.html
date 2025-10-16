@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JWork - Advanced Home Workouts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="manifest.json">
+    <!-- Add these inside the <head> tag -->
+<meta name="theme-color" content="#FF6B35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JWork">
+    <link rel="icon" type="image/png" href="icons/512.png">
+    <link rel="apple-touch-icon" href="icons/512.png">
+<link rel="manifest" href="manifest.json">
     <style>
         * {
             margin: 0;
@@ -2218,6 +2225,78 @@ function getExerciseDescription(exercise) {
 
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', initApp);
+
+        // PWA Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('SW update found: ', newWorker);
+        });
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
+// Install Prompt
+let deferredPrompt;
+const installButton = document.createElement('button');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the mini-infobar from appearing on mobile
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  
+  // Create and show install button
+  installButton.innerHTML = '📱 Install JWork App';
+  installButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    font-family: inherit;
+  `;
+  
+  installButton.addEventListener('click', () => {
+    installButton.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+        showNotification('App Installed', 'JWork has been installed successfully!', 'success');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      deferredPrompt = null;
+    });
+  });
+  
+  document.body.appendChild(installButton);
+});
+
+window.addEventListener('appinstalled', (evt) => {
+  console.log('JWork was installed');
+  if (installButton.parentNode) {
+    installButton.parentNode.removeChild(installButton);
+  }
+  showNotification('Welcome!', 'JWork has been installed successfully!', 'success');
+});
     </script>
 </body>
 </html>

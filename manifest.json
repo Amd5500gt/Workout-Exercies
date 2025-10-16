@@ -1,27 +1,36 @@
 {
-  "background_color": "#9584f1",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "JWork",
-  "orientation": "potrait",
-  "scope": "/",
-  "short_name": "jwork",
+  "name": "JWork - Home Workouts",
+  "short_name": "JWork",
+  "description": "Advanced home workout sessions with dumbbells",
   "start_url": "/",
-  "theme_color": "#3db4f8",
+  "display": "standalone",
+  "background_color": "#0F1419",
+  "theme_color": "#FF6B35",
+  "orientation": "portrait-primary",
+  "scope": "/",
   "icons": [
+
     {
       "src": "icons/512.png",
-      "type": "image/x-icon",
-      "isSquare": false,
-      "isPng": false,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 0,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": false
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "id": "1241",
-  "description": "Manage Your weekly Workout Routine With this App"
+  "screenshots": [
+    {
+      "src": "screenshots/mobile-screenshot.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/desktop-screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "lang": "en-US"
 }
